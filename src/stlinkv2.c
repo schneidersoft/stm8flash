@@ -366,12 +366,12 @@ static int swim_connect(struct adapter *adp) {
 		return -1;
 	}
 
-	uint16_t bsize;
-	if (bulk_in(adp, (uint8_t *)&bsize, 2)) {
+	uint8_t bsize[2];
+	if (bulk_in(adp, bsize, 2)) {
 		ERR("communication failed");
 		return -1;
 	}
-	adp->read_buf_size = le16toh(bsize);
+	adp->read_buf_size = ((uint16_t)bsize[1]<<8)|bsize[0];
 
 	DBG("adp->read_buf_size %d", adp->read_buf_size);
 
