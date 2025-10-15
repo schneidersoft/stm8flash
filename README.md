@@ -80,16 +80,15 @@ However. On devices like the stm8s208mb, removing the ROP means clearing the opt
 So prior to being able to write the flash again, one needs to write valid option bytes. The default option bytes can be read from the datasheet.
 
 The following should generally work to unlock the memories.
-Problem is that
 
 LOCK example:
 ```nohighlight
-./stm8flash -p stm8s003f3 -k
+./stm8flash -p stm8s208mb -k
 ```
 
 UNLOCK example:
 ```nohighlight
-./stm8flash -p stm8s003f3 -u
+./stm8flash -p stm8s208mb -u
 
 python3 -c "open('opt.bin', 'wb').write(b'\x00\x00\xFF\x00\xFF\x00\xFF\x00\xFF\x00\xFF\x00\xFF\x00\xFF')"
 ./stm8flash -p stm8s208mb -u -w opt opt.bin

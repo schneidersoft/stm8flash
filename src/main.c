@@ -762,10 +762,6 @@ void print_help(void) {
 		"Mandatory or optional arguments to long options are also mandatory or optional"
 		"for any corresponding short options.\n"
 		"\n"
-		"The help text following options\n"
-		"\n"
-		"This is used after all other documentation; text is zero for this key\n"
-		"\n"
 		"Report bugs here https://github.com/schneidersoft/stm8flash.\n";
 	fprintf(stderr, "%s", help);
 }
