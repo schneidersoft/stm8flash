@@ -427,6 +427,9 @@ static int swim_connect(struct adapter *adp) {
 		ERR("UNABLE TO GENERATE RESET");
 		return -1;
 	}
+
+	// wait for reset to finish
+	usleep(10000);
 	
 	// release reset
 	DBG("RESET HIGH");
@@ -437,7 +440,7 @@ static int swim_connect(struct adapter *adp) {
 
 	usleep(1000);
 
-	DBG("ATEMPT ENTER BIGH SPEED");
+	DBG("ATEMPT ENTER HIGH SPEED");
 	return stlink2_high_speed(adp);
 }
 
