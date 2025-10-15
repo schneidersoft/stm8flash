@@ -293,6 +293,7 @@ static struct adapter *adapter_open(const char *const pgm_serialno) {
 
 	if (numOfProgrammers > 1 && !pgm_serialno) {
 		ERR("ERROR: More than one programmer found but no serial number given.");
+        libusb_free_device_list(devs, 1);
 		return NULL;
 	}
 
@@ -301,6 +302,7 @@ static struct adapter *adapter_open(const char *const pgm_serialno) {
 		struct libusb_device_descriptor desc;
 		if (libusb_get_device_descriptor(devs[i], &desc) > 0) {
 			ERR("ERROR: unable to get usb device descriptor.");
+            libusb_free_device_list(devs, 1);
 			return NULL;
 		}
 
@@ -312,25 +314,29 @@ static struct adapter *adapter_open(const char *const pgm_serialno) {
 
 			if (libusb_open(devs[i], &tempHandle) < 0) {
 				ERR("ERROR: unable to open usb device.");
+                libusb_free_device_list(devs, 1);
 				return NULL;
 			}
 
 			if (libusb_get_string_descriptor_ascii(tempHandle, desc.iManufacturer, (unsigned char *)vendor, sizeof(vendor)) < 0) {
 				ERR("ERROR: unable to get usb string descriptor.");
+                libusb_free_device_list(devs, 1);
 				return NULL;
 			}
 			if (libusb_get_string_descriptor_ascii(tempHandle, desc.iProduct, (unsigned char *)device, sizeof(device)) < 0) {
 				ERR("ERROR: unable to get usb string descriptor.");
+                libusb_free_device_list(devs, 1);
 				return NULL;
 			}
 			const int serialno_length = libusb_get_string_descriptor_ascii(tempHandle, desc.iSerialNumber, (unsigned char *)serialno, sizeof(serialno));
 			if (serialno_length < 0) {
 				ERR("ERROR: unable to get usb string descriptor.");
+                libusb_free_device_list(devs, 1);
 				return NULL;
 			}
 			serialno_to_hex(serialno, serialno_length, serialno_hex);
 
-			// print programmer data if no serial number specified
+			// the the programmer with matching serialno or use the first programmer if none given 
 			if ((!pgm_serialno) || (0 == strcmp(serialno_hex, pgm_serialno))) {
 				driver = info->open(ctx, tempHandle);
 				if (driver) {
@@ -338,6 +344,7 @@ static struct adapter *adapter_open(const char *const pgm_serialno) {
 				}
 
 				ERR("ERROR: unable to initialize driver.");
+                libusb_free_device_list(devs, 1);
 				return NULL;
 			}
 			libusb_close(tempHandle);
@@ -756,7 +763,7 @@ void print_help(void) {
 		"  -x FORMAT     Assume the FORMAT of FILE. Supported values are ihex, srec, bin.\n"
 		"  -g            increase debug level.\n"
 		"\n"
-		"  -?            Give this help list\n"
+		"  -h            Give this help list\n"
 		"  -V            Print program version\n"
 		"\n"
 		"Mandatory or optional arguments to long options are also mandatory or optional"
@@ -819,7 +826,7 @@ void parse_args(struct arguments *arguments, int argc, char **argv) {
 			arguments->skip_reset = 1;
 			break;
 		case 'V':
-			fprintf(stderr, "version: %s\n", EXPAND_AND_QUOTE(GIT_VERSION));
+			fprintf(stderr, "%s-%d.%d.%d-%s\n", EXPAND_AND_QUOTE(VER_NAME), VER_MAJOR, VER_MINOR, VER_PATCH,EXPAND_AND_QUOTE(GIT_VERSION));
 			exit(0);
 		case 'h':
 			print_help();

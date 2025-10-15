@@ -5,10 +5,16 @@
 #   - MacOS (Darwin)
 #   - Windows (e.g. mingw-w64-x86 with libusb1.0)
 
+include version.mk
+
 GIT_VERSION=$(firstword $(subst ., ,$(shell git log -1 --format="%<(10,trunc)%H")))$(shell git diff --quiet || echo '-dirty')
 
 PLATFORM=$(shell uname -s)
 
+DEFINES+=-DVER_NAME=$(NAME)
+DEFINES+=-DVER_MAJOR=$(MAJOR)
+DEFINES+=-DVER_MINOR=$(MINOR)
+DEFINES+=-DVER_PATCH=$(PATCH)
 DEFINES+=-DGIT_VERSION=$(GIT_VERSION)
 
 BIN=bin
