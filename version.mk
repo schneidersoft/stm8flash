@@ -1,0 +1,4 @@
+NAME=stm8flash
+MAJOR=0
+MINOR=1
+PATCH=0
