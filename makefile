@@ -9,7 +9,7 @@ include version.mk
 
 GIT_VERSION=$(firstword $(subst ., ,$(shell git log -1 --format="%<(10,trunc)%H")))$(shell git diff --quiet || echo '-dirty')
 
-PLATFORM=$(shell uname -s)
+PLATFORM?=$(shell uname -s)
 
 DEFINES+=-DVER_NAME=$(NAME)
 DEFINES+=-DVER_MAJOR=$(MAJOR)
