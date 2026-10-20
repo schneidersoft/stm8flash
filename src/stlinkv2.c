@@ -457,8 +457,8 @@ static int swim_wotf(struct adapter *adp, const uint8_t *buf, uint32_t length, u
 		assert(tmp);
 		tmp[0] = STLINK_SWIM;
 		tmp[1] = STLINK_SWIM_WRITEMEM;
-		tmp[2] = B1(length);
-		tmp[3] = B0(length);
+		tmp[2] = B1(size);
+		tmp[3] = B0(size);
 		tmp[4] = B3(addr);
 		tmp[5] = B2(addr);
 		tmp[6] = B1(addr);
@@ -532,15 +532,16 @@ static int swim_srst(struct adapter *adp) {
 		return -1;
 	}
 	
-	DBG("SWIM_CSR: 0x%02X");
+	DBG("SWIM_CSR: 0x%02X", csr);
 	if ((csr & SWIM_CSR_SWIM_DM) == 0) {
 		ERR("SWIM NOT IN DEBUG MODE");
 		return -1;
 	}
 
 	unsigned char buf[8];
-	buf[0] = STLINK_SWIM_GEN_RST;
-	return bulk_out(adp, buf, 1);
+	buf[0] = STLINK_SWIM;
+	buf[1] = STLINK_SWIM_GEN_RST;
+	return bulk_out(adp, buf, 2);
 }
 
 const static struct adapter adapter = {
